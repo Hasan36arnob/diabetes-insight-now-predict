@@ -98,9 +98,9 @@ const DiabetesPredictionForm = () => {
                     min={1}
                     max={100}
                     step={1}
-                    {...register("Age", { valueAsNumber: true })}
-                    value={[watchAge]}
-                    onValueChange={(vals) => setValue("Age", vals[0])}
+                    {...register("Age")}
+                    value={[Number(watchAge)]}
+                    onValueChange={(vals) => setValue("Age", Number(vals[0]))}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
