@@ -115,7 +115,7 @@ const DiabetesPredictionForm = () => {
                 <Label>Gender</Label>
                 <RadioGroup 
                   defaultValue="0" 
-                  onValueChange={(value) => setValue("Gender", parseInt(value))}
+                  onValueChange={(value) => setValue("Gender", Number(value))}
                   className="flex space-x-4"
                 >
                   <div className="flex items-center space-x-2">
