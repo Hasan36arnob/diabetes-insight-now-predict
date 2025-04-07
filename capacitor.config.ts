@@ -2,7 +2,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.3551e3025f13400e9b7c314999086aba',
+  appId: 'com.lovable.diabetesinsight',
   appName: 'diabetes-insight-now-predict',
   webDir: 'dist',
   bundledWebRuntime: false,
