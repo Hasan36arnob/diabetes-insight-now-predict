@@ -23,11 +23,11 @@ export interface PredictionResult {
 }
 
 export const medicalTermExplanations: Record<string, string> = {
-  Polyuria: "Excessive or abnormally large production of urine",
-  Polydipsia: "Excessive thirst that lasts for prolonged periods of time",
-  Polyphagia: "Excessive hunger or increased appetite",
-  "partial paresis": "Mild to moderate degree of weakness, affecting the voluntary movement of a muscle",
-  Alopecia: "Partial or complete hair loss"
+  Polyuria: "অত্যধিক প্রস্রাব - অস্বাভাবিকভাবে বেশি পরিমাণে প্রস্রাব হওয়া",
+  Polydipsia: "অত্যধিক তৃষ্ণা - দীর্ঘ সময় ধরে অতিরিক্ত তৃষ্ণা অনুভব করা",
+  Polyphagia: "অত্যধিক ক্ষুধা - অস্বাভাবিক রকম বেশি খিদে পাওয়া",
+  "partial paresis": "আংশিক পক্ষাঘাত - পেশীর স্বেচ্ছাকৃত গতিবিধি প্রভাবিত করে এমন হালকা থেকে মাঝারি মাত্রার দুর্বলতা",
+  Alopecia: "চুল পড়া - আংশিক বা সম্পূর্ণ চুল পড়ে যাওয়া"
 };
 
 export const symptomTranslations: Record<string, string> = {
@@ -53,4 +53,22 @@ export const riskLevelBangla: Record<RiskLevel, string> = {
   "Moderate": "মাঝারি",
   "High": "উচ্চ",
   "Very High": "খুব উচ্চ"
+};
+
+// Added Bengali translations for form elements
+export const formTranslations = {
+  age: "বয়স",
+  gender: "লিঙ্গ",
+  female: "নারী",
+  male: "পুরুষ",
+  symptoms: "লক্ষণসমূহ",
+  symptomsDescription: "আপনি নিম্নলিখিত লক্ষণগুলি অনুভব করেন কিনা তা নির্দেশ করুন:",
+  calculateRisk: "ডায়াবেটিস ঝুঁকি নির্ধারণ করুন",
+  pleaseWait: "অপেক্ষা করুন...",
+  yes: "হ্যাঁ",
+  no: "না",
+  diabetesRiskPrediction: "ডায়াবেটিস ঝুঁকি পরীক্ষণ",
+  fillForm: "আপনার ডায়াবেটিস ঝুঁকি যাচাই করতে নিচের ফরমটি পূরণ করুন",
+  disclaimer: "এই টুল শুধুমাত্র তথ্যমূলক উদ্দেশ্যে এবং চিকিৎসা পরামর্শের বিকল্প নয়",
+  footer: "© ২০২৫ ডায়াবেটিস ইনসাইট - পেশাদার চিকিৎসা পরামর্শের বিকল্প নয়"
 };

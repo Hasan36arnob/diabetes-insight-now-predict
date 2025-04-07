@@ -27,7 +27,7 @@ const ResultsDisplay = ({ result, isLoading, error }: ResultsDisplayProps) => {
       <Card className="mt-6 border-2 border-destructive/50">
         <CardContent className="pt-6">
           <div className="text-center">
-            <h3 className="text-lg font-medium text-destructive">ত্রুটি (Error)</h3>
+            <h3 className="text-lg font-medium text-destructive">ত্রুটি</h3>
             <p className="text-sm text-muted-foreground">{error}</p>
           </div>
         </CardContent>
@@ -57,14 +57,14 @@ const ResultsDisplay = ({ result, isLoading, error }: ResultsDisplayProps) => {
   return (
     <Card className={`mt-6 border-2 ${riskColorMap[riskLevel]}`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-center text-lg">ফলাফল (Result)</CardTitle>
+        <CardTitle className="text-center text-lg">ফলাফল</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="text-center">
           <h3 className={`text-xl font-bold ${riskLevel === "Low" ? "text-green-600" : 
             riskLevel === "Moderate" ? "text-yellow-600" : 
             riskLevel === "High" ? "text-orange-600" : "text-red-600"}`}>
-            ডায়াবেটিস ঝুঁকি: {riskLevelBangla[riskLevel]} ({riskLevel})
+            ডায়াবেটিস ঝুঁকি: {riskLevelBangla[riskLevel]}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
             {riskLevel === "Low" 
