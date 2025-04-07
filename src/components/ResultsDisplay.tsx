@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PredictionResult } from "../types/formTypes";
+import { PredictionResult, RiskLevel, riskLevelBangla } from "../types/formTypes";
 import { Loader2 } from "lucide-react";
 
 interface ResultsDisplayProps {
@@ -16,7 +16,7 @@ const ResultsDisplay = ({ result, isLoading, error }: ResultsDisplayProps) => {
       <Card className="mt-6 border-2">
         <CardContent className="pt-6 flex flex-col items-center justify-center min-h-[120px]">
           <Loader2 className="h-8 w-8 animate-spin text-medical-primary" />
-          <p className="mt-2 text-sm text-muted-foreground">Analyzing your data...</p>
+          <p className="mt-2 text-sm text-muted-foreground">আপনার তথ্য বিশ্লেষণ করা হচ্ছে...</p>
         </CardContent>
       </Card>
     );
@@ -27,7 +27,7 @@ const ResultsDisplay = ({ result, isLoading, error }: ResultsDisplayProps) => {
       <Card className="mt-6 border-2 border-destructive/50">
         <CardContent className="pt-6">
           <div className="text-center">
-            <h3 className="text-lg font-medium text-destructive">Error</h3>
+            <h3 className="text-lg font-medium text-destructive">ত্রুটি</h3>
             <p className="text-sm text-muted-foreground">{error}</p>
           </div>
         </CardContent>
@@ -37,32 +37,50 @@ const ResultsDisplay = ({ result, isLoading, error }: ResultsDisplayProps) => {
 
   if (!result) return null;
 
-  const isDiabetic = result.prediction === 1;
-  const probability = result.probability ? Math.round(result.probability * 100) : 0;
+  // Calculate risk level based on probability
+  const getRiskLevel = (probability: number): RiskLevel => {
+    if (probability < 0.3) return "Low";
+    if (probability < 0.6) return "Moderate";
+    if (probability < 0.8) return "High";
+    return "Very High";
+  };
 
+  const riskLevel = getRiskLevel(result.probability);
+  
+  const riskColorMap = {
+    "Low": "text-green-600 border-green-500/50",
+    "Moderate": "text-yellow-600 border-yellow-500/50",
+    "High": "text-orange-600 border-orange-500/50",
+    "Very High": "text-red-600 border-red-500/50",
+  };
+  
   return (
-    <Card className={`mt-6 border-2 ${
-      isDiabetic ? "border-medical-negative/50" : "border-medical-positive/50"
-    }`}>
+    <Card className={`mt-6 border-2 ${riskColorMap[riskLevel]}`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-center text-lg">Prediction Result</CardTitle>
+        <CardTitle className="text-center text-lg">ফলাফল</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="text-center">
-          <h3 className={`text-xl font-bold ${
-            isDiabetic ? "text-medical-negative" : "text-medical-positive"
-          }`}>
-            {isDiabetic ? "Positive" : "Negative"} for Diabetes
+          <h3 className={`text-xl font-bold ${riskLevel === "Low" ? "text-green-600" : 
+            riskLevel === "Moderate" ? "text-yellow-600" : 
+            riskLevel === "High" ? "text-orange-600" : "text-red-600"}`}>
+            ডায়াবেটিস ঝুঁকি: {riskLevelBangla[riskLevel]}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            {isDiabetic 
-              ? "The model predicts that you may have diabetes." 
-              : "The model predicts that you likely don't have diabetes."
+            {riskLevel === "Low" 
+              ? "মডেল অনুমান করে যে আপনার ডায়াবেটিসের ঝুঁকি কম।" 
+              : riskLevel === "Moderate"
+              ? "মডেল অনুমান করে যে আপনার ডায়াবেটিসের মাঝারি ঝুঁকি রয়েছে।"
+              : riskLevel === "High"
+              ? "মডেল অনুমান করে যে আপনার ডায়াবেটিসের উচ্চ ঝুঁকি রয়েছে।"
+              : "মডেল অনুমান করে যে আপনার ডায়াবেটিসের খুব উচ্চ ঝুঁকি রয়েছে।"
             }
           </p>
-          <p className="text-xs text-muted-foreground mt-4">
-            This is not a medical diagnosis. Please consult with a healthcare professional.
-          </p>
+          <div className="mt-4 p-2 bg-gray-50 rounded-md">
+            <p className="text-xs text-muted-foreground">
+              এটি চিকিৎসা নির্ণয় নয়। অনুগ্রহ করে একজন স্বাস্থ্যসেবা পেশাদারের সাথে পরামর্শ করুন।
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>

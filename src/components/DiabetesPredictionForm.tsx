@@ -6,9 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { DiabetesPredictionFormData, PredictionResult } from "../types/formTypes";
+import { 
+  DiabetesPredictionFormData, 
+  PredictionResult, 
+  symptomTranslations, 
+  formTranslations 
+} from "../types/formTypes";
 import { predictDiabetes } from "../utils/predictionApi";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import ResultsDisplay from "./ResultsDisplay";
 import InfoTooltip from "./InfoTooltip";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -50,10 +55,10 @@ const DiabetesPredictionForm = () => {
       const result = await predictDiabetes(data);
       setResult(result);
     } catch (err) {
-      setError("Failed to get prediction. Please try again.");
+      setError("ফলাফল পেতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
       toast({
-        title: "Error",
-        description: "Failed to get prediction. Please try again.",
+        title: "ত্রুটি (Error)",
+        description: "ফলাফল পেতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
         variant: "destructive",
       });
     } finally {
@@ -90,7 +95,7 @@ const DiabetesPredictionForm = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <Label htmlFor="age">Age: {watchAge}</Label>
+                  <Label htmlFor="age">{formTranslations.age}: {watchAge}</Label>
                 </div>
                 <div className="pt-2">
                   <Slider
@@ -104,15 +109,15 @@ const DiabetesPredictionForm = () => {
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>1</span>
-                    <span>50</span>
-                    <span>100</span>
+                    <span>১</span>
+                    <span>৫০</span>
+                    <span>১০০</span>
                   </div>
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label>Gender</Label>
+                <Label>{formTranslations.gender}</Label>
                 <RadioGroup 
                   defaultValue="0" 
                   onValueChange={(value) => setValue("Gender", Number(value))}
@@ -120,11 +125,11 @@ const DiabetesPredictionForm = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="0" id="female" />
-                    <Label htmlFor="female">Female</Label>
+                    <Label htmlFor="female">{formTranslations.female}</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1" id="male" />
-                    <Label htmlFor="male">Male</Label>
+                    <Label htmlFor="male">{formTranslations.male}</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -135,14 +140,14 @@ const DiabetesPredictionForm = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Symptoms</h3>
-              <p className="text-sm text-muted-foreground">Please indicate whether you experience the following symptoms:</p>
+              <h3 className="text-lg font-medium">{formTranslations.symptoms}</h3>
+              <p className="text-sm text-muted-foreground">{formTranslations.symptomsDescription}</p>
               
               {yesNoFields.map((field) => (
                 <div key={field.name} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Label htmlFor={field.name} className="text-sm">
-                      {field.label}
+                      {symptomTranslations[field.name]}
                       {field.needsTooltip && <InfoTooltip term={field.name} />}
                     </Label>
                   </div>
@@ -162,7 +167,7 @@ const DiabetesPredictionForm = () => {
           className="w-full bg-medical-primary hover:bg-medical-primary/90"
           disabled={isLoading}
         >
-          {isLoading ? "Processing..." : "Predict Diabetes Risk"}
+          {isLoading ? formTranslations.pleaseWait : formTranslations.calculateRisk}
         </Button>
       </form>
       
