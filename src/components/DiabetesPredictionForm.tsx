@@ -6,9 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { DiabetesPredictionFormData, PredictionResult } from "../types/formTypes";
+import { DiabetesPredictionFormData, PredictionResult, symptomTranslations } from "../types/formTypes";
 import { predictDiabetes } from "../utils/predictionApi";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import ResultsDisplay from "./ResultsDisplay";
 import InfoTooltip from "./InfoTooltip";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -90,7 +90,7 @@ const DiabetesPredictionForm = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <Label htmlFor="age">Age: {watchAge}</Label>
+                  <Label htmlFor="age">বয়স (Age): {watchAge}</Label>
                 </div>
                 <div className="pt-2">
                   <Slider
@@ -112,7 +112,7 @@ const DiabetesPredictionForm = () => {
               </div>
               
               <div className="space-y-2">
-                <Label>Gender</Label>
+                <Label>লিঙ্গ (Gender)</Label>
                 <RadioGroup 
                   defaultValue="0" 
                   onValueChange={(value) => setValue("Gender", Number(value))}
@@ -120,11 +120,11 @@ const DiabetesPredictionForm = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="0" id="female" />
-                    <Label htmlFor="female">Female</Label>
+                    <Label htmlFor="female">নারী (Female)</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1" id="male" />
-                    <Label htmlFor="male">Male</Label>
+                    <Label htmlFor="male">পুরুষ (Male)</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -135,14 +135,14 @@ const DiabetesPredictionForm = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Symptoms</h3>
-              <p className="text-sm text-muted-foreground">Please indicate whether you experience the following symptoms:</p>
+              <h3 className="text-lg font-medium">লক্ষণসমূহ (Symptoms)</h3>
+              <p className="text-sm text-muted-foreground">আপনি নিম্নলিখিত লক্ষণগুলি অনুভব করেন কিনা তা নির্দেশ করুন:</p>
               
               {yesNoFields.map((field) => (
                 <div key={field.name} className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Label htmlFor={field.name} className="text-sm">
-                      {field.label}
+                      {symptomTranslations[field.name]}
                       {field.needsTooltip && <InfoTooltip term={field.name} />}
                     </Label>
                   </div>
@@ -162,7 +162,7 @@ const DiabetesPredictionForm = () => {
           className="w-full bg-medical-primary hover:bg-medical-primary/90"
           disabled={isLoading}
         >
-          {isLoading ? "Processing..." : "Predict Diabetes Risk"}
+          {isLoading ? "অপেক্ষা করুন..." : "ডায়াবেটিস ঝুঁকি নির্ধারণ করুন"}
         </Button>
       </form>
       

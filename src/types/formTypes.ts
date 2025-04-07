@@ -29,3 +29,28 @@ export const medicalTermExplanations: Record<string, string> = {
   "partial paresis": "Mild to moderate degree of weakness, affecting the voluntary movement of a muscle",
   Alopecia: "Partial or complete hair loss"
 };
+
+export const symptomTranslations: Record<string, string> = {
+  Polyuria: "অত্যধিক প্রস্রাব (বারবার প্রস্রাব করতে হওয়া)",
+  Polydipsia: "অত্যধিক তৃষ্ণা (বারবার পানি পান করতে হওয়া)",
+  "sudden weight loss": "হঠাৎ ওজন কমে যাওয়া",
+  weakness: "দুর্বলতা",
+  Polyphagia: "অত্যধিক ক্ষুধা (বারবার খিদে পাওয়া)",
+  "visual blurring": "দৃষ্টি ঝাপসা হওয়া",
+  Itching: "চুলকানি",
+  Irritability: "খিটখিটে মেজাজ",
+  "delayed healing": "ক্ষত নিরাময় হতে দেরি হওয়া",
+  "partial paresis": "আংশিক পেশী দুর্বলতা",
+  "muscle stiffness": "পেশী শক্ত হয়ে যাওয়া",
+  Alopecia: "চুল পড়া",
+  Obesity: "স্থূলতা"
+};
+
+export type RiskLevel = "Low" | "Moderate" | "High" | "Very High";
+
+export const riskLevelBangla: Record<RiskLevel, string> = {
+  "Low": "কম",
+  "Moderate": "মাঝারি",
+  "High": "উচ্চ",
+  "Very High": "খুব উচ্চ"
+};
