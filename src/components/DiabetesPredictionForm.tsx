@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,7 @@ const DiabetesPredictionForm = () => {
       "muscle stiffness": 0,
       Alopecia: 0,
       Obesity: 0,
+      FamilyDiabetesHistory: 0, // Added family diabetes history field
     }
   });
 
@@ -132,6 +132,21 @@ const DiabetesPredictionForm = () => {
                     <Label htmlFor="male">{formTranslations.male}</Label>
                   </div>
                 </RadioGroup>
+              </div>
+
+              {/* Family Diabetes History Field */}
+              <div className="space-y-2">
+                <Label>{formTranslations.familyDiabetesHistory}</Label>
+                <div className="flex items-center justify-between pt-2">
+                  <Label htmlFor="familyDiabetes" className="text-sm text-muted-foreground">
+                    {formTranslations.familyDiabetesQuestion}
+                  </Label>
+                  <Switch
+                    id="familyDiabetes"
+                    checked={watch("FamilyDiabetesHistory") === 1}
+                    onCheckedChange={handleSwitchChange("FamilyDiabetesHistory")}
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
