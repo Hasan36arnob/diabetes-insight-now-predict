@@ -1,5 +1,23 @@
-
 import { DiabetesPredictionFormData, PredictionResult } from "../types/formTypes";
+
+// Feature importance data based on the provided image
+const featureImportance = {
+  "Polyuria": 0.2238,
+  "Polydipsia": 0.2238, // Same as Polyuria in the image
+  "Age": 0.15,
+  "Gender": 0.05,
+  "sudden weight loss": 0.12,
+  "partial paresis": 0.10,
+  "irritability": 0.08,
+  "Alopecia": 0.06,
+  "delayed healing": 0.11,
+  "Itching": 0.07,
+  "visual blurring": 0.09,
+  "muscle stiffness": 0.05,
+  "Polyphagia": 0.10,
+  "weakness": 0.13,
+  "Obesity": 0.07
+};
 
 // Helper function to convert numeric values to strings
 const convertFormDataToApiFormat = (formData: DiabetesPredictionFormData) => {
@@ -22,13 +40,32 @@ const convertFormDataToApiFormat = (formData: DiabetesPredictionFormData) => {
   };
 };
 
-// Create a mock response function for testing when API is unavailable
-const mockPredictionResponse = (): PredictionResult => {
-  // Randomly return positive or negative result
-  const prediction = Math.random() > 0.5 ? 1 : 0;
+// Enhanced mock response with feature importance
+const mockPredictionResponse = (formData: DiabetesPredictionFormData): PredictionResult => {
+  // Calculate a score based on feature importance and user inputs
+  let score = 0;
+  let totalImportance = 0;
+  
+  Object.entries(featureImportance).forEach(([feature, importance]) => {
+    if (formData[feature as keyof DiabetesPredictionFormData] === 1) {
+      score += importance;
+    }
+    totalImportance += importance;
+  });
+
+  // Normalize the score to be between 0 and 1
+  const normalizedScore = score / totalImportance;
+  
+  // Determine prediction and probability
+  const prediction = normalizedScore > 0.5 ? 1 : 0;
+  const probability = prediction === 1 
+    ? 0.5 + (normalizedScore * 0.5) 
+    : 0.5 - (normalizedScore * 0.5);
+
   return {
     prediction,
-    probability: prediction === 1 ? 0.75 + (Math.random() * 0.2) : 0.25 - (Math.random() * 0.2)
+    probability,
+    featureImportance
   };
 };
 
@@ -38,7 +75,7 @@ export const predictDiabetes = async (formData: DiabetesPredictionFormData): Pro
     const apiFormData = convertFormDataToApiFormat(formData);
     console.log("Sending data to API:", apiFormData);
     
-    const response = await fetch("https://dbdeploy-2.onrender.com/predict", {
+    const response = await fetch("https://dbdeploy-2.onrender.com/predictt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,6 +96,6 @@ export const predictDiabetes = async (formData: DiabetesPredictionFormData): Pro
     
     // Fall back to mock response when API is unavailable
     console.log("Using mock prediction response due to API error");
-    return mockPredictionResponse();
+    return mockPredictionResponse(formData);
   }
 };
