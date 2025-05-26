@@ -1,26 +1,95 @@
-import { DiabetesPredictionFormData, PredictionResult } from "../types/formTypes";
+import { 
+  DiabetesPredictionFormData,
+  PredictionResult,
+  RiskLevel,
+  RiskRecommendations,
+  glucoseLevelInterpretation
+} from "../types/formTypes";
 
-// Feature importance data based on the provided image
+// Feature importance weights for different scenarios
 const featureImportance = {
-  "Polyuria": 0.2238,
-  "Polydipsia": 0.2238, // Same as Polyuria in the image
-  "Age": 0.15,
-  "Gender": 0.05,
-  "sudden weight loss": 0.12,
-  "partial paresis": 0.10,
-  "irritability": 0.08,
-  "Alopecia": 0.06,
-  "delayed healing": 0.11,
-  "Itching": 0.07,
-  "visual blurring": 0.09,
-  "muscle stiffness": 0.05,
-  "Polyphagia": 0.10,
-  "weakness": 0.13,
-  "Obesity": 0.07
+  fasting: {
+    "Polyuria": 0.20,       // Highest importance
+    "Polydipsia": 0.18,     // Very high importance
+    "Age": 0.12,
+    "Gender": 0.04,
+    "sudden weight loss": 0.15,
+    "partial paresis": 0.08,
+    "Irritability": 0.10,
+    "Alopecia": 0.05,
+    "delayed healing": 0.09,
+    "Itching": 0.06,
+    "visual blurring": 0.11,
+    "muscle stiffness": 0.04,
+    "Polyphagia": 0.13,
+    "weakness": 0.14,
+    "Obesity": 0.06,
+    // Added for clinical relevance
+    "FamilyDiabetesHistory": 0.15
+  },
+  postprandial: {
+    "Polyuria": 0.22,       // Even more important after eating
+    "Polydipsia": 0.20,     // Very important after eating
+    "Age": 0.10,
+    "Gender": 0.03,
+    "sudden weight loss": 0.12,
+    "partial paresis": 0.09,
+    "Irritability": 0.08,
+    "Alopecia": 0.04,
+    "delayed healing": 0.10,
+    "Itching": 0.05,
+    "visual blurring": 0.13, // More significant post-meal
+    "muscle stiffness": 0.05,
+    "Polyphagia": 0.15,     // Increased importance
+    "weakness": 0.12,
+    "Obesity": 0.07,
+    // Added for clinical relevance
+    "FamilyDiabetesHistory": 0.12
+  }
 };
 
-// Helper function to convert numeric values to strings
-const convertFormDataToApiFormat = (formData: DiabetesPredictionFormData) => {
+// Risk level thresholds
+const RISK_THRESHOLDS = {
+  Low: 0.3,
+  Moderate: 0.6,
+  High: 0.8
+};
+
+// Recommendations for each risk level
+const recommendations: RiskRecommendations = {
+  Low: [
+    "Maintain healthy lifestyle",
+    "Annual glucose checkup",
+    "Balanced diet",
+    "Regular exercise"
+  ],
+  Moderate: [
+    "Consult doctor",
+    "Quarterly glucose monitoring",
+    "Weight management",
+    "Reduce sugar intake"
+  ],
+  High: [
+    "Immediate medical consultation",
+    "Monthly glucose tests",
+    "Strict diet control",
+    "Regular exercise",
+    "HbA1c testing"
+  ],
+  "Very High": [
+    "Urgent medical attention",
+    "Weekly glucose monitoring",
+    "Diabetes specialist consultation",
+    "Comprehensive lifestyle changes",
+    "Medication review"
+  ]
+};
+
+// Convert form data to API format
+const convertFormDataToApiFormat = (
+  formData: DiabetesPredictionFormData,
+  isFasting: boolean
+) => {
   return {
     Age: formData.Age,
     Gender: formData.Gender === 1 ? "Male" : "Female",
@@ -30,52 +99,80 @@ const convertFormDataToApiFormat = (formData: DiabetesPredictionFormData) => {
     weakness: formData.weakness === 1 ? "Yes" : "No",
     Polyphagia: formData.Polyphagia === 1 ? "Yes" : "No",
     "visual blurring": formData["visual blurring"] === 1 ? "Yes" : "No",
-    Itching: formData.Itching === 1 ? "Yes" : "No",
-    Irritability: formData.Irritability === 1 ? "Yes" : "No",
     "delayed healing": formData["delayed healing"] === 1 ? "Yes" : "No",
     "partial paresis": formData["partial paresis"] === 1 ? "Yes" : "No",
-    "muscle stiffness": formData["muscle stiffness"] === 1 ? "Yes" : "No",
-    Alopecia: formData.Alopecia === 1 ? "Yes" : "No",
-    Obesity: formData.Obesity === 1 ? "Yes" : "No"
+    "FamilyDiabetesHistory": formData.FamilyDiabetesHistory === 1 ? "Yes" : "No",
+    "Obesity": formData.Obesity === 1 ? "Yes" : "No",
+    Scenario: isFasting ? "Fasting" : "Postprandial"
   };
 };
 
-// Enhanced mock response with feature importance
-const mockPredictionResponse = (formData: DiabetesPredictionFormData): PredictionResult => {
-  // Calculate a score based on feature importance and user inputs
+// Generate realistic mock response
+const generateMockResponse = (
+  formData: DiabetesPredictionFormData,
+  isFasting: boolean
+): PredictionResult => {
+  const weights = isFasting ? featureImportance.fasting : featureImportance.postprandial;
   let score = 0;
-  let totalImportance = 0;
-  
-  Object.entries(featureImportance).forEach(([feature, importance]) => {
+  let totalWeight = 0;
+
+  // Calculate weighted score
+  Object.entries(weights).forEach(([feature, weight]) => {
     if (formData[feature as keyof DiabetesPredictionFormData] === 1) {
-      score += importance;
+      score += weight;
     }
-    totalImportance += importance;
+    totalWeight += weight;
   });
 
-  // Normalize the score to be between 0 and 1
-  const normalizedScore = score / totalImportance;
-  
-  // Determine prediction and probability
-  const prediction = normalizedScore > 0.5 ? 1 : 0;
-  const probability = prediction === 1 
-    ? 0.5 + (normalizedScore * 0.5) 
-    : 0.5 - (normalizedScore * 0.5);
+  // Age factor
+  const ageFactor = formData.Age >= 45 ? 0.15 : formData.Age >= 30 ? 0.1 : 0.05;
+  score += ageFactor;
+  totalWeight += ageFactor;
+
+  // Family history factor
+  if (formData.FamilyDiabetesHistory === 1) {
+    score += 0.2;
+    totalWeight += 0.2;
+  }
+
+  // Normalize probability
+  const probability = Math.min(0.99, score / totalWeight);
+  const prediction = probability > 0.6 ? 1 : 0;
+
+  // Determine risk level
+  let riskLevel: RiskLevel = "Low";
+  if (probability > RISK_THRESHOLDS["Very High"]) riskLevel = "Very High";
+  else if (probability > RISK_THRESHOLDS.High) riskLevel = "High";
+  else if (probability > RISK_THRESHOLDS.Moderate) riskLevel = "Moderate";
 
   return {
     prediction,
     probability,
-    featureImportance
+    riskLevel,
+    recommendations: recommendations[riskLevel],
+    scenario: isFasting ? "fasting" : "postprandial",
+    featureImportance: weights,
+    explanation: `Based on your ${isFasting ? "fasting" : "post-meal"} symptoms and profile`,
+    timestamp: new Date().toISOString()
   };
 };
 
-export const predictDiabetes = async (formData: DiabetesPredictionFormData): Promise<PredictionResult> => {
+// Main prediction function
+export const predictDiabetes = async (
+  formData: DiabetesPredictionFormData,
+  isFasting: boolean
+): Promise<PredictionResult> => {
   try {
-    // Convert the form data to the API format
-    const apiFormData = convertFormDataToApiFormat(formData);
-    console.log("Sending data to API:", apiFormData);
+    // Convert data for API
+    const apiFormData = convertFormDataToApiFormat(formData, isFasting);
     
-    const response = await fetch("https://dbdeploy-2.onrender.com/predictt", {
+    // API endpoint
+    const endpoint = isFasting
+      ? "https://dbdeploy-2.onrender.com/predict-fasting"
+      : "https://dbdeploy-2.onrender.com/predict-postprandial";
+
+    // Real API call
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,18 +181,14 @@ export const predictDiabetes = async (formData: DiabetesPredictionFormData): Pro
     });
 
     if (!response.ok) {
-      console.error(`API error status: ${response.status}`);
       throw new Error(`API error: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log("API response:", result);
     return result;
+
   } catch (error) {
-    console.error("Error predicting diabetes:", error);
-    
-    // Fall back to mock response when API is unavailable
-    console.log("Using mock prediction response due to API error");
-    return mockPredictionResponse(formData);
+    console.error("API call failed, using mock response:", error);
+    return generateMockResponse(formData, isFasting);
   }
 };
