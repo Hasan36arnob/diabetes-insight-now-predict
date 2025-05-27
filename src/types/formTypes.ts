@@ -122,7 +122,7 @@ export const formTranslations = {
   errorMessage: "ফলাফল পেতে সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   testType: "পরীক্ষার ধরন",
   fastingTest: "খাওয়ার আগে পরীক্ষা ",
-  postprandialTest: "খাওয়ার পর পরীক্ষা (খাওয়ার ১-২ ঘণ্টা পর)",
+  postprandialTest: "খাওয়ার পর পরীক্ষা (খাওয়ার ২ ঘণ্টা পর)",
   glucoseLevel: "রক্তে শর্করার মাত্রা (mg/dL)",
   lastMealTime: "শেষ খাবার গ্রহণের সময়",
   mealType: "খাবারের ধরন",
